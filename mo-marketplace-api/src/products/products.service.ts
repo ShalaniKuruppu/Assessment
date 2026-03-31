@@ -60,4 +60,17 @@ export class ProductsService {
     relations: ['variants'], //include variants
   });
 }
+
+  async findOne(id: number) {
+  const product = await this.productRepo.findOne({
+    where: { id },
+    relations: ['variants'],
+  });
+
+  if (!product) {
+    throw new Error('Product not found');
+  }
+
+  return product;
+}
 }
