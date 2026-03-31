@@ -39,7 +39,7 @@ export default function ProductList() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Products</h1>
-
+      <a href="/create">Create Product</a>
       {products.map(product => (
         <div key={product.id} style={{
           border: '1px solid #ccc',
