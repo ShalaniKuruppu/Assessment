@@ -56,8 +56,9 @@ export default function Signup() {
         password,
       });
 
-      alert('Account created. Please sign in.');
-      navigate('/login');
+      navigate('/login', {
+        state: { notice: 'Account created. Please sign in.' },
+      });
     } catch (err) {
       console.error(err);
       setError('Unable to sign up. This email may already be in use.');

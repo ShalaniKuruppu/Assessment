@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../store/AuthContext';
 
@@ -30,13 +30,16 @@ interface CartItem {
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, isAuthenticated } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState('');
-  const [cartNotice, setCartNotice] = useState('');
+  const [cartNotice, setCartNotice] = useState(
+    (location.state as { notice?: string } | null)?.notice ?? '',
+  );
   const getCartCount = () => {
     try {
       const rawCart = localStorage.getItem('cart_items');
@@ -165,11 +168,12 @@ export default function ProductDetail() {
 
     try {
       await api.delete(`/products/${product.id}`);
-      alert('Product deleted successfully.');
-      navigate('/');
+      navigate('/', {
+        state: { notice: 'Product deleted successfully.' },
+      });
     } catch (err) {
       console.error(err);
-      alert('Delete failed. Admin access is required.');
+      setCartNotice('Delete failed. Admin access is required.');
     }
   };
 

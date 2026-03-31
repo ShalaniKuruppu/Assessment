@@ -106,8 +106,9 @@ export default function CreateProduct() {
         })),
       });
 
-      alert('Product created!');
-      navigate('/');
+      navigate('/', {
+        state: { notice: 'Product created successfully.' },
+      });
     } catch (err) {
       console.error(err);
       const message = (err as { response?: { data?: { message?: string | string[] } } })

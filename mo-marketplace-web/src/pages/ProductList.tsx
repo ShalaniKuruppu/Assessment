@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AuthActions from '../components/AuthActions';
 import { useAuth } from '../store/AuthContext';
 
@@ -21,8 +21,12 @@ interface Product {
 
 export default function ProductList() {
   const { isAdmin } = useAuth();
+  const location = useLocation();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const notice = (location.state as { notice?: string } | null)?.notice ?? '';
 
   const handleDelete = async (id: number) => {
     const isConfirmed = window.confirm('Delete this product? This action cannot be undone.');
@@ -33,9 +37,10 @@ export default function ProductList() {
     try {
       await api.delete(`/products/${id}`);
       setProducts((prev) => prev.filter((product) => product.id !== id));
+      setError('');
     } catch (err) {
       console.error(err);
-      alert('Delete failed. Admin access is required.');
+      setError('Delete failed. Admin access is required.');
     }
   };
 
@@ -72,6 +77,14 @@ export default function ProductList() {
           </div>
           <AuthActions />
         </div>
+
+        {notice ? <span className="status status-ok">{notice}</span> : null}
+
+        {error ? (
+          <div className="error-summary" role="alert" aria-live="polite">
+            <p>{error}</p>
+          </div>
+        ) : null}
 
         <div className="product-grid">
           {products.map((product) => (

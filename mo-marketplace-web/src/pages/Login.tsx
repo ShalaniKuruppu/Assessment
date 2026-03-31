@@ -12,6 +12,7 @@ export default function Login() {
   const location = useLocation();
   const { signIn } = useAuth();
   const redirectPath = new URLSearchParams(location.search).get('redirect') || '/';
+  const notice = (location.state as { notice?: string } | null)?.notice ?? '';
 
   const handleLogin = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -34,7 +35,7 @@ export default function Login() {
       navigate(redirectPath);
     } catch (err) {
       console.error(err);
-      alert('Login failed');
+      setError('Login failed. Check your credentials and try again.');
     } finally {
       setLoading(false);
     }
@@ -48,6 +49,8 @@ export default function Login() {
         {redirectPath !== '/' ? (
           <p className="subtle">Sign in to continue where you left off.</p>
         ) : null}
+
+        {notice ? <span className="status status-ok">{notice}</span> : null}
 
         {error ? (
           <div className="error-summary" role="alert" aria-live="polite">

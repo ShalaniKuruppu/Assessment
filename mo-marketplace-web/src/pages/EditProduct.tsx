@@ -68,8 +68,9 @@ export default function EditProduct() {
         description: trimmedDescription,
       });
 
-      alert('Product features updated.');
-      navigate(`/products/${id}`);
+      navigate(`/products/${id}`, {
+        state: { notice: 'Product features updated.' },
+      });
     } catch (err) {
       console.error(err);
       setError('Update failed. Admin access is required.');
