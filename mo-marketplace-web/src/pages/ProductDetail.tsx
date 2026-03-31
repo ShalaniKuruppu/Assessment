@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 
 interface Variant {
@@ -30,57 +30,82 @@ export default function ProductDetail() {
       .catch(err => console.error(err));
   }, [id]);
 
-  if (!product) return <p>Loading...</p>;
+  if (!product) {
+    return (
+      <section className="panel">
+        <div className="panel-body">
+          <p className="subtle">Loading product details...</p>
+        </div>
+      </section>
+    );
+  }
 
   const colors = [...new Set(product.variants.map(v => v.color))];
   const sizes = [...new Set(product.variants.map(v => v.size))];
   const materials = [...new Set(product.variants.map(v => v.material))];
 
 
-  const selectedVariant = product.variants.find(v =>
-  v.color === selectedColor &&
-  v.size === selectedSize &&
-  v.material === selectedMaterial
-);
+  const selectedVariant = product.variants.find(
+    (v) =>
+      v.color === selectedColor &&
+      v.size === selectedSize &&
+      v.material === selectedMaterial,
+  );
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>{product.name}</h1>
-      <p>{product.description}</p>
-      <h3>Select Variant</h3>
+    <section className="panel">
+      <div className="panel-body form-stack">
+        <div className="row">
+          <Link className="link-btn btn btn-secondary" to="/">Back to Products</Link>
+          <span className="pill">Product ID: {product.id}</span>
+        </div>
 
-      <select onChange={e => setSelectedColor(e.target.value)}>
-        <option value="">Color</option>
-        {colors.map(c => <option key={c}>{c}</option>)}
-      </select>
+        <h2 className="headline">{product.name}</h2>
+        <p className="subtle">{product.description}</p>
 
-      <select onChange={e => setSelectedSize(e.target.value)}>
-        <option value="">Size</option>
-        {sizes.map(s => <option key={s}>{s}</option>)}
-      </select>
+        <h3 className="headline">Select Variant</h3>
 
-      <select onChange={e => setSelectedMaterial(e.target.value)}>
-        <option value="">Material</option>
-        {materials.map(m => <option key={m}>{m}</option>)}
-      </select>
+        <div className="select-grid">
+          <select className="select" onChange={(e) => setSelectedColor(e.target.value)}>
+            <option value="">Choose color</option>
+            {colors.map((color) => (
+              <option key={color}>{color}</option>
+            ))}
+          </select>
 
-      {selectedVariant && (
-  <p>
-    {selectedVariant.stock > 0
-      ? `${selectedVariant.stock} in stock`
-      : 'Out of stock'}
-  </p>
-)}
+          <select className="select" onChange={(e) => setSelectedSize(e.target.value)}>
+            <option value="">Choose size</option>
+            {sizes.map((size) => (
+              <option key={size}>{size}</option>
+            ))}
+          </select>
 
-    <button
-      disabled={!selectedVariant || selectedVariant.stock === 0}
-      onClick={() =>
-        alert(`Buying ${selectedVariant?.color} ${selectedVariant?.size}`)
-      }
-    >
-      Quick Buy
-    </button>
-      
-    </div>
+          <select className="select" onChange={(e) => setSelectedMaterial(e.target.value)}>
+            <option value="">Choose material</option>
+            {materials.map((material) => (
+              <option key={material}>{material}</option>
+            ))}
+          </select>
+        </div>
+
+        {selectedVariant ? (
+          <span className={`status ${selectedVariant.stock > 0 ? 'status-ok' : 'status-bad'}`}>
+            {selectedVariant.stock > 0 ? `${selectedVariant.stock} in stock` : 'Out of stock'}
+          </span>
+        ) : (
+          <span className="subtle">Choose a full combination to see stock.</span>
+        )}
+
+        <div>
+          <button
+            className="btn btn-primary"
+            disabled={!selectedVariant || selectedVariant.stock === 0}
+            onClick={() => alert(`Buying ${selectedVariant?.color} ${selectedVariant?.size}`)}
+          >
+            Quick Buy
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }

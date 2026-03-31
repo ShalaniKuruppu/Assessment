@@ -34,36 +34,51 @@ export default function ProductList() {
       });
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <section className="panel">
+        <div className="panel-body">
+          <p className="subtle">Loading products...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Products</h1>
-      <a href="/create">Create Product</a>
-      {products.map(product => (
-        <div key={product.id} style={{
-          border: '1px solid #ccc',
-          marginBottom: '10px',
-          padding: '10px'
-        }}>
-          <h2>
-            <Link to={`/products/${product.id}`}>
-                {product.name}
-            </Link>
-          </h2>
-          <p>{product.description}</p>
-
-          <h4>Variants:</h4>
-          <ul>
-            {product.variants.map(v => (
-              <li key={v.id}>
-                {v.color} - {v.size} - {v.material} 
-                ({v.stock > 0 ? `${v.stock} in stock` : 'Out of stock'})
-              </li>
-            ))}
-          </ul>
+    <section className="panel">
+      <div className="panel-body">
+        <div className="row">
+          <div>
+            <h2 className="headline">Products</h2>
+            <p className="subtle">Explore your inventory with quick access to each variant.</p>
+          </div>
+          <div className="row">
+            <Link to="/login" className="link-btn btn btn-secondary">Login</Link>
+            <Link to="/create" className="link-btn btn btn-primary">Create Product</Link>
+          </div>
         </div>
-      ))}
-    </div>
+
+        <div className="product-grid">
+          {products.map((product) => (
+            <article key={product.id} className="product-card">
+              <Link className="product-title-link" to={`/products/${product.id}`}>
+                {product.name}
+              </Link>
+              <p className="subtle">{product.description}</p>
+              <span className="pill">{product.variants.length} variants</span>
+
+              <ul className="variants-list">
+                {product.variants.map((variant) => (
+                  <li key={variant.id}>
+                    {variant.color} / {variant.size} / {variant.material} -{' '}
+                    {variant.stock > 0 ? `${variant.stock} in stock` : 'Out of stock'}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
