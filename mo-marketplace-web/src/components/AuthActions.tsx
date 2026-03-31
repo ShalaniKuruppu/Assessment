@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
 
 export default function AuthActions() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
     <div className="row">
@@ -16,7 +16,9 @@ export default function AuthActions() {
           <Link to="/signup" className="link-btn btn btn-secondary">Sign Up</Link>
         </>
       )}
-      <Link to="/create" className="link-btn btn btn-primary">Create Product</Link>
+      {isAdmin ? (
+        <Link to="/create" className="link-btn btn btn-primary">Create Product</Link>
+      ) : null}
     </div>
   );
 }

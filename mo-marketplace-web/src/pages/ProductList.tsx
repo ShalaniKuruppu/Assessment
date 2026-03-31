@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Link } from 'react-router-dom';
 import AuthActions from '../components/AuthActions';
+import { useAuth } from '../store/AuthContext';
 
 interface Variant {
   id: number;
@@ -19,8 +20,24 @@ interface Product {
 }
 
 export default function ProductList() {
+  const { isAdmin } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDelete = async (id: number) => {
+    const isConfirmed = window.confirm('Delete this product? This action cannot be undone.');
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await api.delete(`/products/${id}`);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert('Delete failed. Admin access is required.');
+    }
+  };
 
   useEffect(() => {
     api.get('/products')
@@ -64,6 +81,21 @@ export default function ProductList() {
               </Link>
               <p className="subtle">{product.description}</p>
               <span className="pill">{product.variants.length} variants</span>
+
+              {isAdmin ? (
+                <div className="row">
+                  <Link className="link-btn btn btn-secondary" to={`/products/${product.id}/edit`}>
+                    Edit Product
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    Delete Product
+                  </button>
+                </div>
+              ) : null}
 
               <ul className="variants-list">
                 {product.variants.map((variant) => (

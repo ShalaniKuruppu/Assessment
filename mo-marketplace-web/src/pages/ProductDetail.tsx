@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../store/AuthContext';
 
 interface Variant {
   id: number;
@@ -19,6 +20,8 @@ interface Product {
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -62,12 +65,40 @@ export default function ProductDetail() {
   });
   const hasInStockMatch = matchingVariants.some((variant) => variant.stock > 0);
 
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm('Delete this product? This action cannot be undone.');
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await api.delete(`/products/${product.id}`);
+      alert('Product deleted successfully.');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert('Delete failed. Admin access is required.');
+    }
+  };
+
   return (
     <section className="panel">
       <div className="panel-body form-stack">
         <div className="row">
           <Link className="link-btn btn btn-secondary" to="/">Back to Products</Link>
-          <span className="pill">Product ID: {product.id}</span>
+          <div className="row">
+            {isAdmin ? (
+              <>
+                <Link className="link-btn btn btn-secondary" to={`/products/${product.id}/edit`}>
+                  Edit Product
+                </Link>
+                <button type="button" className="btn btn-danger" onClick={handleDelete}>
+                  Delete Product
+                </button>
+              </>
+            ) : null}
+            <span className="pill">Product ID: {product.id}</span>
+          </div>
         </div>
 
         <h2 className="headline">{product.name}</h2>

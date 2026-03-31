@@ -14,6 +14,9 @@ export class User {
   @Column({ name: 'password_hash' })
   passwordHash: string;
 
+  @Column({ type: 'varchar', length: 20, default: 'user' })
+  role: 'admin' | 'user';
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
