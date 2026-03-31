@@ -51,6 +51,16 @@ export default function ProductDetail() {
       v.size === selectedSize &&
       v.material === selectedMaterial,
   );
+  const hasAnySelection = Boolean(selectedColor || selectedSize || selectedMaterial);
+  const isFullSelection = Boolean(selectedColor && selectedSize && selectedMaterial);
+  const matchingVariants = product.variants.filter((variant) => {
+    const colorMatch = !selectedColor || variant.color === selectedColor;
+    const sizeMatch = !selectedSize || variant.size === selectedSize;
+    const materialMatch = !selectedMaterial || variant.material === selectedMaterial;
+
+    return colorMatch && sizeMatch && materialMatch;
+  });
+  const hasInStockMatch = matchingVariants.some((variant) => variant.stock > 0);
 
   return (
     <section className="panel">
@@ -64,23 +74,36 @@ export default function ProductDetail() {
         <p className="subtle">{product.description}</p>
 
         <h3 className="headline">Select Variant</h3>
+        <p className="subtle">Select any combination to check stock availability.</p>
 
         <div className="select-grid">
-          <select className="select" onChange={(e) => setSelectedColor(e.target.value)}>
+          <select
+            className="select"
+            value={selectedColor}
+            onChange={(e) => setSelectedColor(e.target.value)}
+          >
             <option value="">Choose color</option>
             {colors.map((color) => (
               <option key={color}>{color}</option>
             ))}
           </select>
 
-          <select className="select" onChange={(e) => setSelectedSize(e.target.value)}>
+          <select
+            className="select"
+            value={selectedSize}
+            onChange={(e) => setSelectedSize(e.target.value)}
+          >
             <option value="">Choose size</option>
             {sizes.map((size) => (
               <option key={size}>{size}</option>
             ))}
           </select>
 
-          <select className="select" onChange={(e) => setSelectedMaterial(e.target.value)}>
+          <select
+            className="select"
+            value={selectedMaterial}
+            onChange={(e) => setSelectedMaterial(e.target.value)}
+          >
             <option value="">Choose material</option>
             {materials.map((material) => (
               <option key={material}>{material}</option>
@@ -88,10 +111,16 @@ export default function ProductDetail() {
           </select>
         </div>
 
-        {selectedVariant ? (
-          <span className={`status ${selectedVariant.stock > 0 ? 'status-ok' : 'status-bad'}`}>
-            {selectedVariant.stock > 0 ? `${selectedVariant.stock} in stock` : 'Out of stock'}
-          </span>
+        {isFullSelection ? (
+          selectedVariant ? (
+            <span className={`status ${selectedVariant.stock > 0 ? 'status-ok' : 'status-bad'}`}>
+              {selectedVariant.stock > 0 ? `${selectedVariant.stock} in stock` : 'Out of stock'}
+            </span>
+          ) : (
+            <span className="status status-bad">Out of stock</span>
+          )
+        ) : hasAnySelection && matchingVariants.length > 0 && !hasInStockMatch ? (
+          <span className="status status-bad">Out of stock</span>
         ) : (
           <span className="subtle">Choose a full combination to see stock.</span>
         )}
