@@ -13,7 +13,7 @@ function App() {
         <header className="app-header">
           <div className="brand-wrap">
             <span className="brand-kicker">MO Marketplace</span>
-            <h1 className="brand-title">Curated Product Experience</h1>
+            <h1 className="brand-title">New Product Experience</h1>
           </div>
         </header>
 

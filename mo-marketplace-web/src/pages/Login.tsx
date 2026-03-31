@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api/client';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../store/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleLogin = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -25,8 +27,7 @@ export default function Login() {
         password,
       });
 
-      //  Save token
-      localStorage.setItem('token', res.data.access_token);
+      signIn(res.data.access_token, res.data.user ?? null);
 
       alert('Login successful');
 

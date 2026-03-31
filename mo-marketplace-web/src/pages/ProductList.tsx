@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Link } from 'react-router-dom';
+import AuthActions from '../components/AuthActions';
 
 interface Variant {
   id: number;
@@ -20,14 +21,6 @@ interface Product {
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(localStorage.getItem('token')),
-  );
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-  };
 
   useEffect(() => {
     api.get('/products')
@@ -60,19 +53,7 @@ export default function ProductList() {
             <h2 className="headline">Products</h2>
             <p className="subtle">Explore your inventory with quick access to each variant.</p>
           </div>
-          <div className="row">
-            {isAuthenticated ? (
-              <button type="button" className="btn btn-secondary" onClick={handleLogout}>
-                Logout
-              </button>
-            ) : (
-              <>
-                <Link to="/login" className="link-btn btn btn-secondary">Sign In</Link>
-                <Link to="/signup" className="link-btn btn btn-secondary">Sign Up</Link>
-              </>
-            )}
-            <Link to="/create" className="link-btn btn btn-primary">Create Product</Link>
-          </div>
+          <AuthActions />
         </div>
 
         <div className="product-grid">
