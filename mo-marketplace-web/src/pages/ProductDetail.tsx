@@ -143,7 +143,18 @@ export default function ProductDetail() {
       return;
     }
 
-    alert(`Buying ${selectedVariant.color} ${selectedVariant.size} ${selectedVariant.material}`);
+    navigate('/checkout', {
+      state: {
+        source: 'quick-buy',
+        quickBuyItem: {
+          productId: product.id,
+          productName: product.name,
+          color: selectedVariant.color,
+          size: selectedVariant.size,
+          material: selectedVariant.material,
+        },
+      },
+    });
   };
 
   const handleDelete = async () => {

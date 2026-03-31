@@ -48,16 +48,7 @@ export default function Cart() {
       return;
     }
 
-    const isConfirmed = window.confirm('Proceed to checkout with current cart items?');
-    if (!isConfirmed) {
-      return;
-    }
-
-    localStorage.removeItem('cart_items');
-    window.dispatchEvent(new Event('cart-updated'));
-    setItems([]);
-    alert('Checkout completed successfully.');
-    navigate('/');
+    navigate('/checkout', { state: { source: 'cart' } });
   };
 
   return (
