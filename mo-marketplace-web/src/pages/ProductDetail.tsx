@@ -31,7 +31,7 @@ interface CartItem {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isAuthenticated } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -103,6 +103,12 @@ export default function ProductDetail() {
   const hasInStockMatch = matchingVariants.some((variant) => variant.stock > 0);
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      setCartNotice('Please sign in to add items to cart. Redirecting...');
+      navigate(`/login?redirect=/products/${product.id}`);
+      return;
+    }
+
     if (!selectedVariant || selectedVariant.stock === 0) {
       return;
     }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api/client';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
 
 export default function Login() {
@@ -9,7 +9,9 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn } = useAuth();
+  const redirectPath = new URLSearchParams(location.search).get('redirect') || '/';
 
   const handleLogin = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -29,9 +31,7 @@ export default function Login() {
 
       signIn(res.data.access_token, res.data.user ?? null);
 
-      alert('Login successful');
-
-      navigate('/'); // go to home
+      navigate(redirectPath);
     } catch (err) {
       console.error(err);
       alert('Login failed');
@@ -45,6 +45,9 @@ export default function Login() {
       <div className="panel-body form-stack">
         <h2 className="headline">Sign In</h2>
         <p className="subtle">Authenticate once and manage products with full access.</p>
+        {redirectPath !== '/' ? (
+          <p className="subtle">Sign in to continue where you left off.</p>
+        ) : null}
 
         {error ? (
           <div className="error-summary" role="alert" aria-live="polite">
