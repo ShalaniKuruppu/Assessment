@@ -133,6 +133,26 @@ Products:
 - Duplicate variant combinations return clear errors
 - Out-of-stock state is handled in product detail flow
 
+## Assumptions
+
+- Local development is the primary target environment.
+- PostgreSQL is available and reachable using values from mo-marketplace-api/.env.
+- JWT auth is sufficient for this project scope (no OAuth/SSO integration required).
+- Checkout is intentionally demo-only and does not include payment gateway integration.
+- Cart persistence is client-side (localStorage) for simplicity.
+- Admin account can be bootstrapped using environment variables.
+
+## Key Technical Decisions and Trade-offs
+
+- Monorepo-style folder split: backend and frontend are kept in separate apps for clear ownership and independent run/build commands.
+- NestJS + TypeORM + PostgreSQL: chosen for fast API development with entity modeling and relational data support.
+- JWT-based stateless authentication: simple to implement and easy to integrate with React via Authorization header.
+- Global ValidationPipe with whitelist and forbidNonWhitelisted: strict payload validation to reduce malformed input risks.
+- Product-scoped variant combination keys: prevents duplicate variant combinations within the same product while allowing reuse across different products.
+- Role-based authorization on management endpoints: admin-only update/delete APIs enforce business control boundaries.
+- React Router page flows for quick buy/cart/checkout: clear UX navigation with simple state passing between screens.
+- In-page feedback messages instead of browser alerts: cleaner UX and better control over messaging behavior.
+
 ## Notes
 
 - Checkout is currently a dummy/demo page (no payment integration).
