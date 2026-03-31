@@ -3,6 +3,7 @@ import './App.css';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import CreateProduct from './pages/CreateProduct';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<ProductList />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/create" element={<CreateProduct />} />
           </Routes>
         </main>
