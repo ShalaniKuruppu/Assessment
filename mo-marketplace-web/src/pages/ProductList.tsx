@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
+import { Link } from 'react-router-dom';
 
 interface Variant {
   id: number;
@@ -45,7 +46,11 @@ export default function ProductList() {
           marginBottom: '10px',
           padding: '10px'
         }}>
-          <h2>{product.name}</h2>
+          <h2>
+            <Link to={`/products/${product.id}`}>
+                {product.name}
+            </Link>
+          </h2>
           <p>{product.description}</p>
 
           <h4>Variants:</h4>
