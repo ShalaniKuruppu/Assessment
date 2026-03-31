@@ -1,16 +1,23 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ValidateNested, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class VariantDto {
   @IsString()
+  @IsNotEmpty()
   color: string;
 
   @IsString()
+  @IsNotEmpty()
   size: string;
 
   @IsString()
+  @IsNotEmpty()
   material: string;
 
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(99999)
   stock: number;
 }
 

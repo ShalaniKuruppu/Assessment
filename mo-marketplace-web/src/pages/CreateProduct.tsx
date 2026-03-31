@@ -110,7 +110,20 @@ export default function CreateProduct() {
       navigate('/');
     } catch (err) {
       console.error(err);
-      alert('Error creating product');
+      const message = (err as { response?: { data?: { message?: string | string[] } } })
+        .response?.data?.message;
+
+      if (Array.isArray(message)) {
+        setErrors(message);
+        return;
+      }
+
+      if (typeof message === 'string' && message.trim()) {
+        setErrors([message]);
+        return;
+      }
+
+      setErrors(['Error creating product']);
     }
   };
 

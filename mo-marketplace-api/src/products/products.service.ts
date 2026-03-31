@@ -26,9 +26,21 @@ export class ProductsService {
     await this.productRepo.save(product);
 
     const variants: Variant[] = [];
+    const seenCombinationKeys = new Set<string>();
 
     for (const v of dto.variants) {
-      const combinationKey = `${v.color}-${v.size}-${v.material}`;
+      const normalizedColor = v.color.trim().toLowerCase();
+      const normalizedSize = v.size.trim().toLowerCase();
+      const normalizedMaterial = v.material.trim().toLowerCase();
+      const productScopedKey = `${normalizedColor}-${normalizedSize}-${normalizedMaterial}`;
+      const combinationKey = `${product.id}:${productScopedKey}`;
+
+      if (seenCombinationKeys.has(combinationKey)) {
+        throw new BadRequestException(
+          `Variant ${productScopedKey} already exists in this product`,
+        );
+      }
+      seenCombinationKeys.add(combinationKey);
 
       // prevent duplicates
       const exists = await this.variantRepo.findOne({
@@ -37,12 +49,15 @@ export class ProductsService {
 
       if (exists) {
         throw new BadRequestException(
-          `Variant ${combinationKey} already exists`,
+          `Variant ${productScopedKey} already exists in this product`,
         );
       }
 
       const variant = this.variantRepo.create({
         ...v,
+        color: v.color.trim(),
+        size: v.size.trim(),
+        material: v.material.trim(),
         combination_key: combinationKey,
         product,
       });
