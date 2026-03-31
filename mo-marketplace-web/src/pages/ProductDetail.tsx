@@ -18,6 +18,16 @@ interface Product {
   variants: Variant[];
 }
 
+interface CartItem {
+  productId: number;
+  productName: string;
+  variantId: number;
+  color: string;
+  size: string;
+  material: string;
+  quantity: number;
+}
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -26,12 +36,39 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState('');
+  const [cartNotice, setCartNotice] = useState('');
+  const getCartCount = () => {
+    try {
+      const rawCart = localStorage.getItem('cart_items');
+      if (!rawCart) {
+        return 0;
+      }
+
+      const cartItems = JSON.parse(rawCart) as CartItem[];
+      return cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+    } catch {
+      return 0;
+    }
+  };
+  const [cartCount, setCartCount] = useState(getCartCount);
 
   useEffect(() => {
     api.get(`/products/${id}`)
       .then(res => setProduct(res.data))
       .catch(err => console.error(err));
   }, [id]);
+
+  useEffect(() => {
+    const syncCart = () => setCartCount(getCartCount());
+
+    window.addEventListener('storage', syncCart);
+    window.addEventListener('cart-updated', syncCart as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', syncCart);
+      window.removeEventListener('cart-updated', syncCart as EventListener);
+    };
+  }, []);
 
   if (!product) {
     return (
@@ -64,6 +101,44 @@ export default function ProductDetail() {
     return colorMatch && sizeMatch && materialMatch;
   });
   const hasInStockMatch = matchingVariants.some((variant) => variant.stock > 0);
+
+  const handleAddToCart = () => {
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      return;
+    }
+
+    const nextItem: CartItem = {
+      productId: product.id,
+      productName: product.name,
+      variantId: selectedVariant.id,
+      color: selectedVariant.color,
+      size: selectedVariant.size,
+      material: selectedVariant.material,
+      quantity: 1,
+    };
+
+    const rawCart = localStorage.getItem('cart_items');
+    const cart: CartItem[] = rawCart ? (JSON.parse(rawCart) as CartItem[]) : [];
+    const existing = cart.find((item) => item.variantId === nextItem.variantId);
+
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push(nextItem);
+    }
+
+    localStorage.setItem('cart_items', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cart-updated'));
+    setCartNotice('Added to cart.');
+  };
+
+  const handleQuickBuy = () => {
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      return;
+    }
+
+    alert(`Buying ${selectedVariant.color} ${selectedVariant.size} ${selectedVariant.material}`);
+  };
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm('Delete this product? This action cannot be undone.');
@@ -98,6 +173,7 @@ export default function ProductDetail() {
               </>
             ) : null}
             <span className="pill">Product ID: {product.id}</span>
+            <Link className="pill link-btn" to="/cart">Cart: {cartCount}</Link>
           </div>
         </div>
 
@@ -156,15 +232,25 @@ export default function ProductDetail() {
           <span className="subtle">Choose a full combination to see stock.</span>
         )}
 
-        <div>
+        <div className="action-group">
+          <button
+            className="btn btn-secondary"
+            disabled={!selectedVariant || selectedVariant.stock === 0}
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </button>
+
           <button
             className="btn btn-primary"
             disabled={!selectedVariant || selectedVariant.stock === 0}
-            onClick={() => alert(`Buying ${selectedVariant?.color} ${selectedVariant?.size}`)}
+            onClick={handleQuickBuy}
           >
             Quick Buy
           </button>
         </div>
+
+        {cartNotice ? <span className="status status-ok">{cartNotice}</span> : null}
       </div>
     </section>
   );

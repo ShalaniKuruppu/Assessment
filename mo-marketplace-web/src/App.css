@@ -47,6 +47,37 @@
   box-shadow: 0 24px 60px rgba(13, 24, 35, 0.26);
 }
 
+.brand-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.header-cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.cart-count {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2ea7ff;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
 .brand-kicker {
   display: inline-flex;
   letter-spacing: 0.16em;
@@ -161,6 +192,12 @@
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
   margin-top: 18px;
+}
+
+.cart-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
 
 .product-card {
@@ -293,6 +330,12 @@
   background: #fde5e6;
 }
 
+.action-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .auth-box {
   width: min(460px, 100%);
   margin: 0 auto;
@@ -312,6 +355,10 @@
 @media (max-width: 920px) {
   .brand-wrap {
     padding: 24px;
+  }
+
+  .header-cart {
+    font-size: 0.82rem;
   }
 
   .select-grid {
