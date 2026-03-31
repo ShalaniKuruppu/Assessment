@@ -53,4 +53,11 @@ export class ProductsService {
 
     return { product, variants };
   }
+
+
+  async findAll() {
+  return this.productRepo.find({
+    relations: ['variants'], //include variants
+  });
+}
 }
