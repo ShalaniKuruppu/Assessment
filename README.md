@@ -44,12 +44,12 @@ Frontend:
 - Out-of-stock handling in selection flow
 - Product creation form with validations
 - Login/signup flows
-- Cart page and dummy checkout page
+- Cart page and  checkout page
 - Quick Buy flow redirected to checkout page
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 18
 - npm 9+
 - PostgreSQL running locally (or reachable DB)
 
@@ -100,6 +100,10 @@ npm run dev
 Default URLs:
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
+
+## Live Demo
+
+- Deployed Frontend: https://assessment-rho-red.vercel.app/
 
 ## Build
 
@@ -155,7 +159,7 @@ Products:
 
 ## Notes
 
-- Checkout is currently a dummy/demo page (no payment integration).
+- Checkout is currently a demo page (no payment integration).
 - Cart is localStorage-based in current implementation.
 - API enables CORS for local development.
 
